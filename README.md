@@ -1,4 +1,5 @@
-Korx.Cycler
-===========
+# Korx.Cycler
 
-MooTools based slideshow/carousel using CSS 3 transitions with a fallback to Javascript
+## Overview
+
+Korx.Cycler is a Javascript slideshow class based on MooTools. It uses CSS 3 transitions with a fallback to Fx.Morph.
