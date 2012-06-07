@@ -28,19 +28,19 @@
                         }
                     },
                     duration: 4000,
-                    in: {
+                    appear: {
                         duration: 2000,
                         transition: 'quad:in:out',
                         unit: '%',
                         timingFunction: 'ease-out'
                     },
-                    out: {
+                    disappear: {
                         duration: 2000,
                         transition: 'quad:in:out',
                         unit: '%',
                         timingFunction: 'ease-in'
                     },
-                    initial: {
+                    origin: {
                         css: {
                             opacity: 0,
                             transform: 'translate(-100%, 0) rotate(-25deg)',
@@ -64,7 +64,7 @@
                             left: '0%'
                         }
                     },
-                    final: {
+                    destination: {
                         css: {
                             opacity: 0,
                             transform: 'translate(100%, 0) rotate(25deg)',

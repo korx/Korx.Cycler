@@ -72,7 +72,7 @@ To use simply create a new object of the Korx.Cycler class spcifying your contai
         this.pause();
     }
 
-`onTap` is triggered when a 'tap' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `start` and `end` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
+`onTap` is triggered when a 'tap' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
 
     onSwipe: function(thisElement, event){
         this.pause();
@@ -86,31 +86,31 @@ To use simply create a new object of the Korx.Cycler class spcifying your contai
         }
     }
 
-`onSwipe` is triggered when a 'swipe' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `direction` which could be 'left' or 'right' along with `start` and `end` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
+`onSwipe` is triggered when a 'swipe' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `direction` which could be 'left' or 'right' along with `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
 
     duration: 5000
 
 `duration` is the amount of time in milliseconds between each interval setup when `play()` has been invoked.
 
-    in: {
+    appear: {
         duration: 500,
         transition: 'sine:in:out',
         unit: '%',
         timingFunction: 'ease-in-out'
     }
 
-`in` is the set of options for the CSS transition and Fx.Morph when an element is moving in to the current position.
+`appear` is the set of options for the CSS transition and Fx.Morph when an element is moving in to the current position.
 
-    out: {
+    disappear: {
         duration: 500,
         transition: 'sine:in:out',
         unit: '%',
         timingFunction: 'ease-in-out'
     }
 
-`out` is the set of options for the CSS transition and Fx.Morph when an element is moving out from the current position.
+`disappear` is the set of options for the CSS transition and Fx.Morph when an element is moving out from the current position.
 
-    initial: {
+    origin: {
         css: {
             transform: 'translate(-100%, 0)'
         },
@@ -119,7 +119,7 @@ To use simply create a new object of the Korx.Cycler class spcifying your contai
         }
     }
 
-`initial` is the set of styles for each of the `css` and `js` transitions used for the starting point of the next element.
+`origin` is the set of styles for each of the `css` and `js` transitions used for the starting point of the next element.
 
     current: {
         css: {
@@ -132,7 +132,7 @@ To use simply create a new object of the Korx.Cycler class spcifying your contai
 
 `current` is the set of styles for each of the `css` and `js` transitions used for the finishing point of the next element and starting point of the previous element.
 
-    final: {
+    destination: {
         css: {
             transform: 'translate(100%, 0)'
         },
@@ -141,7 +141,7 @@ To use simply create a new object of the Korx.Cycler class spcifying your contai
         }
     }
 
-`final` is the set of styles for each of the `css` and `js` transitions used for the finishing point of the previous element.
+`destination` is the set of styles for each of the `css` and `js` transitions used for the finishing point of the previous element.
 
     swipeTime: 500
 

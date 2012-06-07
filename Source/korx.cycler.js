@@ -116,19 +116,19 @@ Korx.Cycler = new Class({
             }
         },
         duration: 5000,
-        in: {
+        appear: {
             duration: 500,
             transition: 'sine:in:out',
             unit: '%',
             timingFunction: 'ease-in-out'
         },
-        out: {
+        disappear: {
             duration: 500,
             transition: 'sine:in:out',
             unit: '%',
             timingFunction: 'ease-in-out'
         },
-        initial: {
+        origin: {
             css: {
                 transform: 'translate(-100%, 0)'
             },
@@ -144,7 +144,7 @@ Korx.Cycler = new Class({
                 left: '0%'
             }
         },
-        final: {
+        destination: {
             css: {
                 transform: 'translate(100%, 0)'
             },
@@ -190,47 +190,48 @@ Korx.Cycler = new Class({
                         break;
                 }
             }
-            // set the starting position
-            var start = null;
-            var end = null;
+            // setup position vars
+            var origin = null;
+            var destination = null;
+            // set the origin position
             if (e.touches) {
                 if (e.touches.length == 1) {
-                    start = {
+                    origin = {
                         x: e.touches[0].clientX,
                         y: e.touches[0].clientY,
                         t: new Date().getTime()
                     };
                 }
             } else {
-                start = {
+                origin = {
                     x: e.clientX,
                     y: e.clientY,
                     t: new Date().getTime()
                 };
             }
-            if (start != null) {
+            if (origin != null) {
                 // listen to move events
                 var moveListener = function(e){
-                    // set the end position
+                    // set the destination position
                     if (e.touches) {
                         if (e.touches.length == 1) {
-                            end = {
+                            destination = {
                                 x: e.touches[0].clientX,
                                 y: e.touches[0].clientY,
                                 t: new Date().getTime()
                             };
                         } else {
-                            end = null;
+                            destination = null;
                         }
                     } else {
-                        end = {
+                        destination = {
                             x: e.clientX,
                             y: e.clientY,
                             t: new Date().getTime()
                         };
                     }
                     // make sure we're in the timeframe and distance tolerance
-                    if (start != null && end != null && end.t - start.t < this.options.swipeTime && Math.abs(end.y - start.y) < distance) {
+                    if (origin != null && destination != null && destination.t - origin.t < this.options.swipeTime && Math.abs(destination.y - origin.y) < distance) {
                         // prevent default action
                         e.preventDefault();
                     } else {
@@ -243,11 +244,11 @@ Korx.Cycler = new Class({
                 this.element.addEvent('touchmove', moveListener);
                 // listen to end events
                 var endListener = function(e){
-                    if (start != null && end != null && end.t - start.t < this.options.swipeTime) {
+                    if (origin != null && destination != null && destination.t - origin.t < this.options.swipeTime) {
                         // prevent default action
                         e.preventDefault();
-                        // get the difference in the starting and ending x postitions
-                        var dx = end.x - start.x;
+                        // get the difference in the origin and destination x postitions
+                        var dx = destination.x - origin.x;
                         // check of the delta is more than the minimum swipe distance
                         var direction = null;
                         if (dx < -distance) {
@@ -258,14 +259,14 @@ Korx.Cycler = new Class({
                         // fire a swipe event if there was a direction or a tap if there wasnt
                         if (direction != null) {
                             this.fireEvent('swipe', [this.element, {
-                                start: start,
-                                end: end,
+                                origin: origin,
+                                destination: destination,
                                 direction: direction
                             }]);
                         } else {
                             this.fireEvent('tap', [this.element, {
-                                start: start,
-                                end: end
+                                origin: origin,
+                                destination: destination
                             }]);
                         }
                     }
@@ -356,7 +357,7 @@ Korx.Cycler = new Class({
         
         // remove all existing styles and then setup the current item styles
         this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.initial.js)).append(Object.keys(this.options.initial.css))).setPrefixedStyles(this.css ? this.options.initial.css : this.options.initial.js).get('morph').cancel();
+            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).get('morph').cancel();
         }, this);
         this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
 
@@ -421,47 +422,47 @@ Korx.Cycler = new Class({
         if (this.css) {
 
             // transition next item to current style
-            this.transition(nextItem, (delta > 0) ? this.options.initial.css : this.options.final.css, this.options.current.css);
-            // transition previous item to final style
-            this.transition(previousItem, null, (delta > 0) ? this.options.final.css : this.options.initial.css);
+            this.transition(nextItem, (delta > 0) ? this.options.origin.css : this.options.destination.css, this.options.current.css, this.options.appear);
+            // transition previous item to destination style
+            this.transition(previousItem, null, (delta > 0) ? this.options.destination.css : this.options.origin.css, this.options.disappear);
 
         } else {
 
-            // set next item initial style
-            nextItem.setPrefixedStyles((delta > 0) ? this.options.initial.js : this.options.final.js);
+            // set next item origin style
+            nextItem.setPrefixedStyles((delta > 0) ? this.options.origin.js : this.options.destination.js);
             // morph next item to current style
-            nextItem.set('morph', this.options.in).morph(this.options.current.js);
-            // morph previous item to final style
-            previousItem.set('morph', this.options.out).morph((delta > 0) ? this.options.final.js : this.options.initial.js);
+            nextItem.set('morph', this.options.appear).morph(this.options.current.js);
+            // morph previous item to destination style
+            previousItem.set('morph', this.options.disappear).morph((delta > 0) ? this.options.destination.js : this.options.origin.js);
 
         }
 
         return this;
     },
 
-    transition: function(element, from, to){
+    transition: function(element, origin, destination, options){
         if (element.retrieve('queue', []).length > 0) {
-            element.store('queue', element.retrieve('queue', []).push({from: from, to: to}));
+            element.store('queue', element.retrieve('queue', []).push({origin: origin, destination: destination, options: options}));
         } else {
-            // don't transition to the from styles
-            if (from != null) {
+            // don't transition to the origin styles
+            if (origin != null) {
                 element.setPrefixedStyles({
                     transitionProperty: 'none'
                 });
             }
             // wait for styles to be applied
             (function(){
-                // set element from style
-                if (from != null) {
-                    element.setPrefixedStyles(from);
+                // set element origin style
+                if (origin != null) {
+                    element.setPrefixedStyles(origin);
                 }
                 // wait for styles to be applied
                 (function(){
                     // start using transitions for the element
                     element.setPrefixedStyles({
                         transitionProperty: 'all',
-                        transitionDuration: this.options.in.duration+'ms',
-                        transitionTimingFunction: this.options.in.timingFunction
+                        transitionDuration: options.duration+'ms',
+                        transitionTimingFunction: options.timingFunction
                     });
                     // stop using transitions when the element finishes transitioning
                     var transitionEndEventListener = function(e){
@@ -469,8 +470,8 @@ Korx.Cycler = new Class({
                             element.removeTransitionEndEvent(transitionEndEventListener);
                             // action next in queue
                             if (element.retrieve('queue', []).length > 0) {
-                                var styles = element.retrieve('queue', []).shift();
-                                this.transition(element, styles.from, styles.to);
+                                var queue = element.retrieve('queue', []).shift();
+                                this.transition(element, queue.origin, queue.destination, queue.options);
                             } else {
                                 element.setPrefixedStyles({
                                     transitionProperty: 'none'
@@ -479,8 +480,8 @@ Korx.Cycler = new Class({
                         }
                     }.bind(this);
                     element.addTransitionEndEvent(transitionEndEventListener);
-                    // set element to style
-                    element.setPrefixedStyles(to);
+                    // set element destination style
+                    element.setPrefixedStyles(destination);
                 }).delay(10, this);
             }).delay(10, this);
         }
