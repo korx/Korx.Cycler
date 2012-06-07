@@ -2,6 +2,7 @@
 
 Korx.Cycler is a Javascript slideshow/carousel class based on MooTools. It uses CSS 3 transitions with a fallback to Fx.Morph.
 
+![Screenshot](https://github.com/korx/Korx.Cycler/raw/master/Graphics/screenshot.jpg)
 
 ## How to use
 
