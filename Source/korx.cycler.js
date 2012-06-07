@@ -92,6 +92,7 @@ Korx.Cycler = new Class({
     options: {/*
         onPlay: function(thisElement){},
         onStop: function(thisElement){},
+        onPause: function(thisElement){},
         onMove: function(thisElement, event){},*/
         onReady: function(thisElement){
             this.play();
@@ -100,10 +101,10 @@ Korx.Cycler = new Class({
             this.move(1);
         },
         onTap: function(thisElement, event){
-            this.stop();
+            this.pause();
         },
         onSwipe: function(thisElement, event){
-            this.stop();
+            this.pause();
             switch (event.direction) {
                 case 'left':
                     this.move(-1);
@@ -306,6 +307,8 @@ Korx.Cycler = new Class({
             (function() {
                 // get rid of the test element
                 test.removeTransitionEndEvent(testListener).destroy();
+                // reset the elements
+                this.reset();
                 // let the world know we're ready for action
                 this.ready = true;
                 this.fireEvent('ready', this.element);
@@ -316,7 +319,7 @@ Korx.Cycler = new Class({
     useCss: function(){
         this.css = true;
         if (this.stepper != null) {
-            this.play();
+            this.stop().play();
         } else {
             this.stop();
         }
@@ -326,7 +329,7 @@ Korx.Cycler = new Class({
     useJs: function(){
         this.css = false;
         if (this.stepper != null) {
-            this.play();
+            this.stop().play();
         } else {
             this.stop();
         }
@@ -352,7 +355,7 @@ Korx.Cycler = new Class({
         
         // remove all existing styles and then setup the current item styles
         this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.initial.js)).append(Object.keys(this.options.initial.css))).setPrefixedStyles(this.css ? this.options.initial.css : this.options.initial.js);
+            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.initial.js)).append(Object.keys(this.options.initial.css))).setPrefixedStyles(this.css ? this.options.initial.css : this.options.initial.js).get('morph').cancel();
         }, this);
         this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
 
@@ -367,7 +370,6 @@ Korx.Cycler = new Class({
         this.stepper = (function(){
             this.fireEvent('step', this.element);
         }).periodical(this.options.duration, this);
-        this.reset();
         this.fireEvent('play', this.element);
         return this;
     },
@@ -377,6 +379,13 @@ Korx.Cycler = new Class({
         this.stepper = null;
         this.reset();
         this.fireEvent('stop', this.element);
+        return this;
+    },
+
+    pause: function(){
+        clearInterval(this.stepper);
+        this.stepper = null;
+        this.fireEvent('pause', this.element);
         return this;
     },
 
@@ -407,57 +416,13 @@ Korx.Cycler = new Class({
 
         // update the current item index
         this.current = next;
-        
+
         if (this.css) {
 
-            // set next item initial style
-            nextItem.setPrefixedStyles((delta > 0) ? this.options.initial.css : this.options.final.css);
-            
-            // wait for styles to be applied
-            (function(){
-            
-                // start using transitions for next item
-                nextItem.setPrefixedStyles({
-                    transitionProperty: 'all',
-                    transitionDuration: this.options.in.duration+'ms',
-                    transitionTimingFunction: this.options.in.timingFunction
-                });
-                // stop using transitions when the item finishes transitioning
-                var nextItemListener = function(e){
-                    if (e.target == nextItem) {
-                        nextItem.removeTransitionEndEvent(nextItemListener).setPrefixedStyles({
-                            transitionProperty: 'none'
-                        });
-                        if (this.options.in.onComplete) {
-                            this.options.in.onComplete.call(e);
-                        }
-                    }
-                }.bind(this);
-                nextItem.addTransitionEndEvent(nextItemListener);
-                // set next item to current style
-                nextItem.setPrefixedStyles(this.options.current.css);
-                // start using transitions for previous item
-                previousItem.setPrefixedStyles({
-                    transitionProperty: 'all',
-                    transitionDuration: this.options.out.duration+'ms',
-                    transitionTimingFunction: this.options.out.timingFunction
-                });
-                // stop using transitions when the item finishes transitioning
-                var previousItemListener = function(e){
-                    if (e.target == previousItem) {
-                        previousItem.removeTransitionEndEvent(previousItemListener).setPrefixedStyles({
-                            transitionProperty: 'none'
-                        });
-                        if (this.options.out.onComplete) {
-                            this.options.out.onComplete.call(e);
-                        }
-                    }
-                }.bind(this);
-                previousItem.addTransitionEndEvent(previousItemListener);
-                // set previous item to final style
-                previousItem.setPrefixedStyles((delta > 0) ? this.options.final.css : this.options.initial.css);
-                
-            }).delay(10, this);
+            // transition next item to current style
+            this.transition(nextItem, (delta > 0) ? this.options.initial.css : this.options.final.css, this.options.current.css);
+            // transition previous item to final style
+            this.transition(previousItem, null, (delta > 0) ? this.options.final.css : this.options.initial.css);
 
         } else {
 
@@ -471,6 +436,53 @@ Korx.Cycler = new Class({
         }
 
         return this;
+    },
+
+    transition: function(element, from, to){
+        if (element.retrieve('queue', []).length > 0) {
+            element.store('queue', element.retrieve('queue', []).push({from: from, to: to}));
+        } else {
+            // don't transition to the from styles
+            if (from != null) {
+                element.setPrefixedStyles({
+                    transitionProperty: 'none'
+                });
+            }
+            // wait for styles to be applied
+            (function(){
+                // set element from style
+                if (from != null) {
+                    element.setPrefixedStyles(from);
+                }
+                // wait for styles to be applied
+                (function(){
+                    // start using transitions for the element
+                    element.setPrefixedStyles({
+                        transitionProperty: 'all',
+                        transitionDuration: this.options.in.duration+'ms',
+                        transitionTimingFunction: this.options.in.timingFunction
+                    });
+                    // stop using transitions when the element finishes transitioning
+                    var transitionEndEventListener = function(e){
+                        if (e.target == element) {
+                            element.removeTransitionEndEvent(transitionEndEventListener);
+                            // action next in queue
+                            if (element.retrieve('queue', []).length > 0) {
+                                var styles = element.retrieve('queue', []).shift();
+                                this.transition(element, styles.from, styles.to);
+                            } else {
+                                element.setPrefixedStyles({
+                                    transitionProperty: 'none'
+                                });
+                            }
+                        }
+                    }.bind(this);
+                    element.addTransitionEndEvent(transitionEndEventListener);
+                    // set element to style
+                    element.setPrefixedStyles(to);
+                }).delay(10, this);
+            }).delay(10, this);
+        }
     }
 
 });

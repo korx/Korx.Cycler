@@ -14,10 +14,10 @@
                         this.move(1);
                     },
                     onTap: function(thisElement, event){
-                        this.stop();
+                        this.pause();
                     },
                     onSwipe: function(thisElement, event){
-                        this.stop();
+                        this.pause();
                         switch (event.direction) {
                             case 'left':
                                 this.move(-1);
@@ -45,12 +45,11 @@
                             opacity: 0,
                             transform: 'translate(-100%, 0) rotate(-25deg)',
                             transformOrigin: 'center bottom',
-                            zIndex: 2
+                            zIndex: 1
                         },
                         js: {
                             opacity: 0,
-                            left: '-100%',
-                            zIndex: 2
+                            left: '-100%'
                         }
                     },
                     current: {
@@ -58,12 +57,11 @@
                             opacity: 1,
                             transform: 'translate(0, 0) rotate(0deg)',
                             transformOrigin: 'center bottom',
-                            zIndex: 3
+                            zIndex: 2
                         },
                         js: {
                             opacity: 1,
-                            left: '0%',
-                            zIndex: 3
+                            left: '0%'
                         }
                     },
                     final: {
@@ -75,8 +73,7 @@
                         },
                         js: {
                             opacity: 0,
-                            left: '100%',
-                            zIndex: 1
+                            left: '100%'
                         }
                     },
                     swipeTime: 500,
@@ -88,12 +85,15 @@
                 $('stop').addEvent('click', function(){
                     cycler.stop();
                 });
+                $('pause').addEvent('click', function(){
+                    cycler.pause();
+                });
                 $('move_forward').addEvent('click', function(){
-                    cycler.stop();
+                    cycler.pause();
                     cycler.move(1);
                 });
                 $('move_backward').addEvent('click', function(){
-                    cycler.stop();
+                    cycler.pause();
                     cycler.move(-1);
                 });
                 $('use_css').addEvent('click', function(){
@@ -106,6 +106,7 @@
         </script>
         <style>
             body {
+                overflow: hidden;
                 background: #ffffff;
                 font-family: 'Arial', sans-serif;
                 -webkit-font-smoothing: antialiased;
@@ -164,6 +165,7 @@
             </section>
             <button id="play">Play</button>
             <button id="stop">Stop</button>
+            <button id="pause">Pause</button>
             <button id="move_forward">Move Forward</button>
             <button id="move_backward">Move Backward</button>
             <button id="use_css">Use CSS</button>
