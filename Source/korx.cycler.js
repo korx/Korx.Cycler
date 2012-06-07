@@ -1,3 +1,4 @@
+/*! © 2012 Korx Limited */
 /*
 ---
 name: Korx.Cycler
