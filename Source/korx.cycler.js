@@ -96,16 +96,32 @@ Korx.Cycler = new Class({
         onPause: function(thisElement){},
         onMove: function(thisElement, event){},*/
         onReady: function(thisElement){
+            // set display styles
+            this.items.each(function(item){
+                item.setStyles({
+                    'display': 'none',
+                    'z-index': 1
+                });
+            }, this);
+            this.items[this.current].setStyles({
+                'display': null,
+                'z-index': 0
+            });
+            // start playing
             this.play();
         },
         onStep: function(thisElement){
+            // move forward one
             this.move(1);
         },
         onTap: function(thisElement, event){
+            // pause the cycler
             this.pause();
         },
         onSwipe: function(thisElement, event){
+            // pause the cycler
             this.pause();
+            // move in the direction by one
             switch (event.direction) {
                 case 'up':
                 case 'left':
@@ -120,10 +136,18 @@ Korx.Cycler = new Class({
         duration: 5000,
         appear: {
             onStart: function(){
-                this.element.setStyle('display', null);
+                // set display styles to visible and top
+                this.element.setStyles({
+                    'display': null,
+                    'z-index': 1
+                });
             },
             onComplete: function(){
-                this.element.setStyle('display', null);
+                // set display styles to visible and bottom
+                this.element.setStyles({
+                    'display': null,
+                    'z-index': 0
+                });
             },
             duration: 500,
             transition: 'quad:in:out',
@@ -131,38 +155,34 @@ Korx.Cycler = new Class({
         },
         disappear: {
             onStart: function(){
-                this.element.setStyle('display', null);
+                // set display styles to visible and bottom
+                this.element.setStyles({
+                    'display': null,
+                    'z-index': 0
+                });
             },
             onComplete: function(){
-                this.element.setStyle('display', 'none');
+                // set display styles to hidden and top
+                this.element.setStyles({
+                    'display': 'none',
+                    'z-index': 1
+                });
             },
             duration: 500,
             transition: 'quad:in:out',
             timingFunction: 'ease-in-out'
         },
         origin: {
-            css: {
-                zIndex: 3
-            },
-            js: {
-                zIndex: 3
-            }
+            css: {},
+            js: {}
         },
         current: {
-            css: {
-                zIndex: 2
-            },
-            js: {
-                zIndex: 2
-            }
+            css: {},
+            js: {}
         },
         destination: {
-            css: {
-                zIndex: 1
-            },
-            js: {
-                zIndex: 1
-            }
+            css: {},
+            js: {}
         },
         swipeTime: 500,
         swipeDistance: 50
@@ -375,9 +395,9 @@ Korx.Cycler = new Class({
         
         // remove all existing styles and then setup the current item styles
         this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).setStyle('display', 'none').get('morph').cancel();
+            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).get('morph').cancel();
         }, this);
-        this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js).setStyle('display', null);
+        this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
 
         return this;
     },
@@ -440,18 +460,18 @@ Korx.Cycler = new Class({
         if (this.css) {
 
             // transition next item to current style
-            this.transition(nextItem, (delta > 0) ? this.options.origin.css : this.options.destination.css, this.options.current.css, this.options.appear);
+            this.transition(nextItem, (delta > 0 ? this.options.origin.css : this.options.destination.css), this.options.current.css, this.options.appear);
             // transition previous item to destination style
-            this.transition(previousItem, null, (delta > 0) ? this.options.destination.css : this.options.origin.css, this.options.disappear);
+            this.transition(previousItem, null, (delta > 0 ? this.options.destination.css : this.options.origin.css), this.options.disappear);
 
         } else {
 
             // set next item origin style
-            nextItem.setPrefixedStyles((delta > 0) ? this.options.origin.js : this.options.destination.js);
+            nextItem.setPrefixedStyles(delta > 0 ? this.options.origin.js : this.options.destination.js);
             // morph next item to current style
             nextItem.store('morph', null).set('morph', this.options.appear).morph(this.options.current.js);
             // morph previous item to destination style
-            previousItem.store('morph', null).set('morph', this.options.disappear).morph((delta > 0) ? this.options.destination.js : this.options.origin.js);
+            previousItem.store('morph', null).set('morph', this.options.disappear).morph(delta > 0 ? this.options.destination.js : this.options.origin.js);
 
         }
 
