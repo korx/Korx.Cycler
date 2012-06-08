@@ -95,7 +95,9 @@ Korx.Cycler = new Class({
         onStop: function(thisElement){},
         onPause: function(thisElement){},
         onMove: function(thisElement, event){},*/
-        onReady: function(thisElement){
+        onInit: function(thisElement){
+            // add items to the cycler
+            this.addItems(this.element.getChildren());
             // set display styles
             this.items.each(function(item){
                 item.setStyles({
@@ -107,6 +109,8 @@ Korx.Cycler = new Class({
                 'display': null,
                 'z-index': 0
             });
+        },
+        onReady: function(thisElement){
             // start playing
             this.play();
         },
@@ -188,7 +192,7 @@ Korx.Cycler = new Class({
         swipeDistance: 50
     },
 
-    initialize: function(element, items, options){
+    initialize: function(element, options){
         this.setOptions(options);
 
         this.element = document.id(element);
@@ -197,8 +201,9 @@ Korx.Cycler = new Class({
         this.ready = false;
         this.current = 0;
         this.stepper = null;
-
-        this.addItems($$(document.id(items) || items));
+        
+        // fire init event
+        this.fireEvent('init', this.element);
 
         // Detect swipe
         this.element.addEvent('touchstart', function(e){

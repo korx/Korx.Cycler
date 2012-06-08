@@ -6,7 +6,7 @@
         <script src="../../Source/korx.cycler.js"></script>
         <script>
             window.addEvent('domready', function(){
-                var cycler = new Korx.Cycler($('cycler'), $('cycler').getChildren('article'), {
+                var cycler = new Korx.Cycler($('cycler'), {
                     onReady: function(thisElement){
                         this.play();
                     },
