@@ -144,18 +144,18 @@ Korx.Cycler = new Class({
         },
         current: {
             css: {
-                zIndex: 1
+                zIndex: 2
             },
             js: {
-                zIndex: 1
+                zIndex: 2
             }
         },
         destination: {
             css: {
-                zIndex: 2
+                zIndex: 1
             },
             js: {
-                zIndex: 2
+                zIndex: 1
             }
         },
         swipeTime: 500,
