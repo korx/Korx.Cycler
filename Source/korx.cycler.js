@@ -443,9 +443,9 @@ Korx.Cycler = new Class({
             // set next item origin style
             nextItem.setPrefixedStyles((delta > 0) ? this.options.origin.js : this.options.destination.js);
             // morph next item to current style
-            nextItem.set('morph', this.options.appear).morph(this.options.current.js);
+            nextItem.store('morph', null).set('morph', this.options.appear).morph(this.options.current.js);
             // morph previous item to destination style
-            previousItem.set('morph', this.options.disappear).morph((delta > 0) ? this.options.destination.js : this.options.origin.js);
+            previousItem.store('morph', null).set('morph', this.options.disappear).morph((delta > 0) ? this.options.destination.js : this.options.origin.js);
 
         }
 
