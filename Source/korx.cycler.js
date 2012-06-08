@@ -3,7 +3,7 @@
 ---
 name: Korx.Cycler
 
-version: 0.1
+version: 0.2
 
 description: Korx.Cycler is a versatile slider/slideshow/carousel MooTools plugin. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers.
 
