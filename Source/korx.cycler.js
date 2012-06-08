@@ -121,8 +121,7 @@ Korx.Cycler = new Class({
                 this.element.setStyle('display', null);
             },
             duration: 500,
-            transition: 'sine:in:out',
-            unit: '%',
+            transition: 'quad:in:out'
             timingFunction: 'ease-in-out'
         },
         disappear: {
@@ -130,38 +129,31 @@ Korx.Cycler = new Class({
                 this.element.setStyle('display', 'none');
             },
             duration: 500,
-            transition: 'sine:in:out',
-            unit: '%',
+            transition: 'quad:in:out'
             timingFunction: 'ease-in-out'
         },
         origin: {
             css: {
-                zIndex: 3,
-                transform: 'translate(-100%, 0)'
+                zIndex: 3
             },
             js: {
-                zIndex: 3,
-                left: '-100%'
+                zIndex: 3
             }
         },
         current: {
             css: {
-                zIndex: 1,
-                transform: 'translate(0, 0)'
+                zIndex: 1
             },
             js: {
-                zIndex: 1,
-                left: '0%'
+                zIndex: 1
             }
         },
         destination: {
             css: {
-                zIndex: 2,
-                transform: 'translate(100%, 0)'
+                zIndex: 2
             },
             js: {
-                zIndex: 2,
-                left: '100%'
+                zIndex: 2
             }
         },
         swipeTime: 500,
