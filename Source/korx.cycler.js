@@ -5,7 +5,7 @@ name: Korx.Cycler
 
 version: 0.1
 
-description: A Javascript slideshow class based on MooTools. It uses CSS 3 transitions with a fallback to Fx.Morph.
+description: Korx.Cycler is a versatile slider/slideshow/carousel MooTools plugin. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers.
 
 license: 
   - MIT-style
@@ -117,12 +117,18 @@ Korx.Cycler = new Class({
         },
         duration: 5000,
         appear: {
+            onStart: function(){
+                this.element.setStyle('display', null);
+            },
             duration: 500,
             transition: 'sine:in:out',
             unit: '%',
             timingFunction: 'ease-in-out'
         },
         disappear: {
+            onComplete: function(){
+                this.element.setStyle('display', 'none');
+            },
             duration: 500,
             transition: 'sine:in:out',
             unit: '%',
@@ -130,25 +136,31 @@ Korx.Cycler = new Class({
         },
         origin: {
             css: {
+                zIndex: 3,
                 transform: 'translate(-100%, 0)'
             },
             js: {
+                zIndex: 3,
                 left: '-100%'
             }
         },
         current: {
             css: {
+                zIndex: 1,
                 transform: 'translate(0, 0)'
             },
             js: {
+                zIndex: 1,
                 left: '0%'
             }
         },
         destination: {
             css: {
+                zIndex: 2,
                 transform: 'translate(100%, 0)'
             },
             js: {
+                zIndex: 2,
                 left: '100%'
             }
         },
@@ -357,9 +369,9 @@ Korx.Cycler = new Class({
         
         // remove all existing styles and then setup the current item styles
         this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).get('morph').cancel();
+            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).setStyle('display', 'none').get('morph').cancel();
         }, this);
-        this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
+        this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js).setStyle('display', null);
 
         return this;
     },
@@ -456,6 +468,10 @@ Korx.Cycler = new Class({
                 if (origin != null) {
                     element.setPrefixedStyles(origin);
                 }
+                // fire start event
+                if (typeOf(options.onStart) == 'function') {
+                    options.onStart.call({element: element, options: options});
+                }
                 // wait for styles to be applied
                 (function(){
                     // start using transitions for the element
@@ -468,6 +484,10 @@ Korx.Cycler = new Class({
                     var transitionEndEventListener = function(e){
                         if (e.target == element) {
                             element.removeTransitionEndEvent(transitionEndEventListener);
+                            // fire complete event
+                            if (typeOf(options.onComplete) == 'function') {
+                                options.onComplete.call({element: element, options: options});
+                            }
                             // action next in queue
                             if (element.retrieve('queue', []).length > 0) {
                                 var queue = element.retrieve('queue', []).shift();
