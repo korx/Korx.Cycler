@@ -1,7 +1,7 @@
 name: Korx.Cycler
 author: korx
 category: Widgets
-current: 0.1
-tags: [cycler, css3, slideshow, carousel, animation, gallery, html5]
+current: 0.2
+tags: [cycler, css3, html5, animation, slider, carousel, slideshow, gallery]
 docs: https://github.com/korx/Korx.Cycler/blob/master/README.md
-demo: http://jsfiddle.net/korx/hgjem/
+demo: http://korx.github.com/Korx.Cycler/Demo/

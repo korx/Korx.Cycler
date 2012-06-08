@@ -1,14 +1,14 @@
 # Korx.Cycler
 
-Korx.Cycler is a slideshow/carousel MooTools plugin. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers.
+Korx.Cycler is a versatile MooTools plugin which can be used to easily create a user interface control which cycles through elements, for example a slider, carousel or slideshow. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers, and there's plenty of options to configure it how you want and events to hook in to.
 
 ![Screenshot](https://github.com/korx/Korx.Cycler/raw/master/Graphics/screenshot.jpg)
 
 ## How to use
 
-Please have a look into the Demo directory for a couple of demos of how Korx.Cycler works.
+Please have a look in the Demo directory for a couple of examples of how you can use Korx.Cycler. These can also be seen on [GitHub Pages](http://korx.github.com/Korx.Cycler/Demo/)
 
-To use simply create a new object of the Korx.Cycler class spcifying your container element and the item elements after the DOM has loaded.
+In it's simplest form, create a new object of the Korx.Cycler class specifying your container element and the item elements to be cycled through after the DOM has loaded.
 
     <!doctype html>
     <html>
@@ -87,7 +87,7 @@ This is triggered when a 'tap' touch event or gesture is detected in the contain
 
 
 #### `onSwipe`
-This is triggered when a 'swipe' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `direction` which could be 'left' or 'right' along with `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
+This is triggered when a 'swipe' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `direction` which could be 'left', 'right', 'up' or 'down' along with `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
 
     onSwipe: function(thisElement, event){
         this.pause();
