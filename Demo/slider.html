@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Korx.Cycler Slider</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
+        <script src="../Source/korx.cycler.js"></script>
+        <script>
+            window.addEvent('domready', function(){
+                var slider = new Korx.Cycler($('slider'), $('slider').getChildren('article'), {
+                    appear: {
+                        unit: '%'
+                    },
+                    disappear: {
+                        unit: '%'
+                    },
+                    origin: {
+                        css: {
+                            transform: 'translate(-100%, 0)'
+                        },
+                        js: {
+                            left: -100
+                        }
+                    },
+                    current: {
+                        css: {
+                            transform: 'translate(0, 0)'
+                        },
+                        js: {
+                            left: 0
+                        }
+                    },
+                    destination: {
+                        css: {
+                            transform: 'translate(100%, 0)'
+                        },
+                        js: {
+                            left: 100
+                        }
+                    }
+                });
+            });
+        </script>
+        <style>
+            #wrapper {
+                margin: 0 auto;
+                width: 960px;
+            }
+            #slider {
+                position: relative;
+                width: 960px;
+                height: 300px;
+                overflow: hidden;
+            }
+            #slider article {
+                position: absolute;
+                width: 960px;
+                height: 300px;
+            }
+            #slider article div {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 860px;
+                padding: 10px 50px;
+                background: #ffffff;
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="slider">
+                <article>   
+                    <div>
+                        <h1>The first element</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                    <img src="../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
+                </article>
+                <article>
+                    <div>
+                        <h1>The second element</h1>
+                        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                    <img src="../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
+                </article>
+                <article>
+                    <div>
+                        <h1>The third element</h1>
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+                    </div>
+                    <img src="../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
+                </article>
+                <article>
+                    <div>
+                        <h1>The fourth element</h1>
+                        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                    <img src="../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
+                </article>
+            </div>
+        </div>
+    </body>
+</html>
