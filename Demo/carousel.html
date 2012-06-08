@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
     <head>
-        <title>Korx.Cycler Slider</title>
+        <title>Korx.Cycler Carousel</title>
         <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
         <script src="../Source/korx.cycler.js"></script>
         <script>
             window.addEvent('domready', function(){
-                var slider = new Korx.Cycler($('slider'), $('slider').getChildren('article'), {
+                var carousel = new Korx.Cycler($('carousel'), $('carousel').getChildren('article'), {
                     appear: {
                         unit: '%'
                     },
@@ -45,18 +45,18 @@
                 margin: 0 auto;
                 width: 960px;
             }
-            #slider {
+            #carousel {
                 position: relative;
                 width: 960px;
                 height: 300px;
                 overflow: hidden;
             }
-            #slider article {
+            #carousel article {
                 position: absolute;
                 width: 960px;
                 height: 300px;
             }
-            #slider article div {
+            #carousel article div {
                 position: absolute;
                 bottom: 0;
                 left: 0;
@@ -69,7 +69,7 @@
     </head>
     <body>
         <div id="wrapper">
-            <div id="slider">
+            <div id="carousel">
                 <article>   
                     <div>
                         <h1>The first element</h1>
