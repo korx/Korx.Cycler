@@ -107,9 +107,11 @@ Korx.Cycler = new Class({
         onSwipe: function(thisElement, event){
             this.pause();
             switch (event.direction) {
+                case 'up':
                 case 'left':
                     this.move(-1);
                     break;
+                case 'down':
                 case 'right':
                     this.move(1);
                     break;
@@ -121,7 +123,7 @@ Korx.Cycler = new Class({
                 this.element.setStyle('display', null);
             },
             duration: 500,
-            transition: 'quad:in:out'
+            transition: 'quad:in:out',
             timingFunction: 'ease-in-out'
         },
         disappear: {
@@ -129,7 +131,7 @@ Korx.Cycler = new Class({
                 this.element.setStyle('display', 'none');
             },
             duration: 500,
-            transition: 'quad:in:out'
+            transition: 'quad:in:out',
             timingFunction: 'ease-in-out'
         },
         origin: {
@@ -235,7 +237,7 @@ Korx.Cycler = new Class({
                         };
                     }
                     // make sure we're in the timeframe and distance tolerance
-                    if (origin != null && destination != null && destination.t - origin.t < this.options.swipeTime && Math.abs(destination.y - origin.y) < distance) {
+                    if (origin != null && destination != null && destination.t - origin.t < this.options.swipeTime) {
                         // prevent default action
                         e.preventDefault();
                     } else {
@@ -253,12 +255,18 @@ Korx.Cycler = new Class({
                         e.preventDefault();
                         // get the difference in the origin and destination x postitions
                         var dx = destination.x - origin.x;
+                        // get the difference in the origin and destination y postitions
+                        var dy = destination.y - origin.y;
                         // check of the delta is more than the minimum swipe distance
                         var direction = null;
-                        if (dx < -distance) {
+                        if (dx < -distance && -distance < dy < distance) {
                             direction = 'left';
-                        } else if (dx > distance) {
+                        } else if (dx > distance && -distance < dy < distance) {
                             direction = 'right';
+                        } else if (dy < -distance && -distance < dx < distance) {
+                            direction = 'up';
+                        } else if (dy > distance && -distance < dx < distance) {
+                            direction = 'down';
                         }
                         // fire a swipe event if there was a direction or a tap if there wasnt
                         if (direction != null) {
