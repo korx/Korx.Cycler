@@ -90,11 +90,7 @@ Korx.Cycler = new Class({
 
     Implements: [Events, Options],
 
-    options: {/*
-        onPlay: function(thisElement){},
-        onStop: function(thisElement){},
-        onPause: function(thisElement){},
-        onMove: function(thisElement, event){},*/
+    options: {
         onInit: function(thisElement){
             // add items to the cycler
             this.addItems(this.element.getChildren());
@@ -113,7 +109,11 @@ Korx.Cycler = new Class({
         onReady: function(thisElement){
             // start playing
             this.play();
-        },
+        },/*
+        onPlay: function(thisElement){},
+        onStop: function(thisElement){},
+        onPause: function(thisElement){},
+        onMove: function(thisElement, event){},*/
         onStep: function(thisElement){
             // move forward one
             this.move(1);

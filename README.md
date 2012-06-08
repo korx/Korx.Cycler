@@ -8,7 +8,7 @@ Korx.Cycler is a versatile MooTools plugin which can be used to easily create a 
 
 Please have a look in the Demo directory for a couple of examples of how you can use Korx.Cycler. These can also be seen on [GitHub Pages](http://korx.github.com/Korx.Cycler/Demo/)
 
-In it's simplest form, create a new object of the Korx.Cycler class specifying your container element and the item elements to be cycled through after the DOM has loaded.
+In it's simplest form, create a new object of the Korx.Cycler class specifying your container element after the DOM has loaded.
 
     <!doctype html>
     <html>
@@ -18,26 +18,41 @@ In it's simplest form, create a new object of the Korx.Cycler class specifying y
             <script src="korx.cycler.js"></script>
             <script>
                 window.addEvent('domready', function(){
-                    var cycler = new Korx.Cycler($('cycler'), $('cycler').getChildren('article'));
+                    new Korx.Cycler($('cycler'));
                 });
             </script>
         </head>
         <body>
-            <section id="cycler">
-                <h1>Simple Cycler</h1>
+            <div id="cycler">
                 <article>
                     <h1>The first element</h1>
                 </article>
                 <article>
                     <h1>The second element</h1>
                 </article>
-            </section>
+            </div>
         </body>
     </html>
 
 
 ### Options
-    
+
+#### `onInit`
+This is triggered during initialisation before it has been determined wether CSS transition support is available or not. `thisElement` refers to the container element.
+
+    onInit: function(thisElement){
+        this.addItems(this.element.getChildren());
+    }
+
+
+#### `onReady`
+This is triggered during initialisation after it has been determined wether CSS transition support is available or not. `thisElement` refers to the container element.
+
+    onReady: function(thisElement){
+        this.play();
+    }
+
+
 ####`onPlay`
 This is triggered when the method `play()` is invoked. `thisElement` refers to the container element.
 
@@ -60,14 +75,6 @@ This is triggered when the method `pause()` is invoked. `thisElement` refers to 
 This is triggered when the method `move()` is invoked. `thisElement` refers to the container element. `event` is an object with the properties `delta`, `next` and `previous` where `delta` is the amount to moved by, `next` is the new current element and `previous` is the old current element.
 
     onMove: function(thisElement, event){}
-
-
-#### `onReady`
-This is triggered during initialisation after it has been determined wether CSS transition support is available or not. `thisElement` refers to the container element.
-
-    onReady: function(thisElement){
-        this.play();
-    }
 
 
 #### `onStep`
