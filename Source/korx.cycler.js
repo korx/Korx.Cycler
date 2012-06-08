@@ -122,11 +122,17 @@ Korx.Cycler = new Class({
             onStart: function(){
                 this.element.setStyle('display', null);
             },
+            onComplete: function(){
+                this.element.setStyle('display', null);
+            },
             duration: 500,
             transition: 'quad:in:out',
             timingFunction: 'ease-in-out'
         },
         disappear: {
+            onStart: function(){
+                this.element.setStyle('display', null);
+            },
             onComplete: function(){
                 this.element.setStyle('display', 'none');
             },
