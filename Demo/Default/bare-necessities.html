@@ -1,15 +1,19 @@
 <!doctype html>
 <html>
     <head>
-        <title>Korx.Cycler Default</title>
+        <title>Korx.Cycler - Default - Bare necessities</title>
         <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
-        <script src="../Source/korx.cycler.js"></script>
+        <script src="../../Source/korx.cycler.js"></script>
         <script>
             window.addEvent('domready', function(){
-                var cycler = new Korx.Cycler($('cycler'), $('cycler').getChildren('article'));
+                var cycler = new Korx.Cycler($('cycler'), $('cycler').getChildren());
             });
         </script>
         <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
             #wrapper {
                 margin: 0 auto;
                 width: 960px;
@@ -31,10 +35,12 @@
     </head>
     <body>
         <div id="wrapper">
+            <p><a href="../index.html">More demos</a></p>
+            <h1>Default - Bare necessities</h1>
             <div id="cycler">
                 <article style="background-color: #ff0000;">
                     <h1>The first element</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et aliqua.</p>
                 </article>
                 <article style="background-color: #00ff00;">
                     <h1>The second element</h1>

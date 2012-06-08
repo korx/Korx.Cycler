@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
     <head>
-        <title>Korx.Cycler Slideshow</title>
+        <title>Korx.Cycler - Slideshow - Bare necessities</title>
         <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
-        <script src="../Source/korx.cycler.js"></script>
+        <script src="../../Source/korx.cycler.js"></script>
         <script>
             window.addEvent('domready', function(){
-                var slideshow = new Korx.Cycler($('slideshow'), $('slideshow').getChildren('img'), {
+                var slideshow = new Korx.Cycler($('slideshow'), $('slideshow').getChildren(), {
                     origin: {
                         css: {
                             transform: 'scale(0.75, 0.75)',
@@ -38,6 +38,10 @@
             });
         </script>
         <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
             #wrapper {
                 margin: 0 auto;
                 width: 960px;
@@ -54,12 +58,14 @@
     </head>
     <body>
         <div id="wrapper">
+            <p><a href="../index.html">More demos</a></p>
+            <h1>Slideshow - Bare necessities</h1>
             <div id="slideshow">
-                <img src="../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
-                <img src="../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
-                <img src="../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
-                <img src="../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
-                <img src="../Graphics/image5.jpg" width="960" height="300" alt="Eta Carinae Nebula">
+                <img src="../../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
+                <img src="../../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
+                <img src="../../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
+                <img src="../../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
+                <img src="../../Graphics/image5.jpg" width="960" height="300" alt="Eta Carinae Nebula">
             </div>
         </div>
     </body>

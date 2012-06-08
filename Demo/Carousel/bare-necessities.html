@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
     <head>
-        <title>Korx.Cycler Carousel</title>
+        <title>Korx.Cycler - Carousel - Bare necessities</title>
         <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
-        <script src="../Source/korx.cycler.js"></script>
+        <script src="../../Source/korx.cycler.js"></script>
         <script>
             window.addEvent('domready', function(){
-                var carousel = new Korx.Cycler($('carousel'), $('carousel').getChildren('article'), {
+                var carousel = new Korx.Cycler($('carousel'), $('carousel').getChildren(), {
                     appear: {
                         unit: '%'
                     },
@@ -41,6 +41,10 @@
             });
         </script>
         <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
             #wrapper {
                 margin: 0 auto;
                 width: 960px;
@@ -69,34 +73,36 @@
     </head>
     <body>
         <div id="wrapper">
+            <p><a href="../index.html">More demos</a></p>
+            <h1>Carousel - Bare necessities</h1>
             <div id="carousel">
                 <article>   
                     <div>
                         <h1>The first element</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et aliqua.</p>
                     </div>
-                    <img src="../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
+                    <img src="../../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
                 </article>
                 <article>
                     <div>
                         <h1>The second element</h1>
                         <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                     </div>
-                    <img src="../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
+                    <img src="../../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
                 </article>
                 <article>
                     <div>
                         <h1>The third element</h1>
                         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
                     </div>
-                    <img src="../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
+                    <img src="../../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
                 </article>
                 <article>
                     <div>
                         <h1>The fourth element</h1>
                         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                     </div>
-                    <img src="../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
+                    <img src="../../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
                 </article>
             </div>
         </div>
