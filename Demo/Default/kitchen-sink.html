@@ -7,16 +7,16 @@
         <script>
             window.addEvent('domready', function(){
                 var cycler = new Korx.Cycler($('cycler'), {
-                    onReady: function(thisElement){
+                    onReady: function(){
                         this.play();
                     },
-                    onStep: function(thisElement){
+                    onStep: function(){
                         this.move(1);
                     },
-                    onTap: function(thisElement, event){
+                    onTap: function(event){
                         this.pause();
                     },
-                    onSwipe: function(thisElement, event){
+                    onSwipe: function(event){
                         this.pause();
                         switch (event.direction) {
                             case 'left':
@@ -44,8 +44,7 @@
                         css: {
                             opacity: 0,
                             transform: 'translate(-100%, 0) rotate(-25deg)',
-                            transformOrigin: 'center bottom',
-                            zIndex: 1
+                            transformOrigin: 'center bottom'
                         },
                         js: {
                             opacity: 0,
@@ -56,8 +55,7 @@
                         css: {
                             opacity: 1,
                             transform: 'translate(0, 0) rotate(0deg)',
-                            transformOrigin: 'center bottom',
-                            zIndex: 2
+                            transformOrigin: 'center bottom'
                         },
                         js: {
                             opacity: 1,
@@ -68,8 +66,7 @@
                         css: {
                             opacity: 0,
                             transform: 'translate(100%, 0) rotate(25deg)',
-                            transformOrigin: 'center bottom',
-                            zIndex: 1
+                            transformOrigin: 'center bottom'
                         },
                         js: {
                             opacity: 0,
@@ -108,6 +105,7 @@
             body {
                 font-family: 'Arial', sans-serif;
                 -webkit-font-smoothing: antialiased;
+                overflow-x: hidden;
             }
             #wrapper {
                 margin: 0 auto;
