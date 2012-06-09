@@ -118,9 +118,6 @@
                 width: 960px;
                 height: 300px;
             }
-            #cycler h1 {
-                display: none;
-            }
             #cycler article {
                 position: absolute;
                 top: 0;
@@ -129,23 +126,13 @@
                 width: 860px;
                 height: 200px;
             }
-            #cycler article h1 {
-                display: block;
-                font-size: 36px;
-                margin: 0 0 10px 0;
-            }
-            #cycler article p {
-                font-size: 12px;
-                margin: 10px 0;
-            }
         </style>
     </head>
     <body>
         <div id="wrapper">
             <p><a href="../index.html">More demos</a></p>
             <h1>Default - Kitchen sink</h1>
-            <section id="cycler">
-                <h1>Advanced Cycler</h1>
+            <div id="cycler">
                 <article style="background-color: #ff0000;">
                     <h1>The first element</h1>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et aliqua.</p>
@@ -162,7 +149,7 @@
                     <h1>The fourth element</h1>
                     <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 </article>
-            </section>
+            </div>
             <button id="play">Play</button>
             <button id="stop">Stop</button>
             <button id="pause">Pause</button>
