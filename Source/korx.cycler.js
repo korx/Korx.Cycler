@@ -178,7 +178,7 @@ Korx.Cycler = new Class({
     Implements: [Events, Options],
 
     options: {
-        onInit: function(thisElement){
+        onInit: function(){
             // add items to the cycler
             this.addItems(this.element.getChildren());
             // set display styles
@@ -193,7 +193,7 @@ Korx.Cycler = new Class({
                 'z-index': 0
             });
         },
-        onReady: function(thisElement){
+        onReady: function(){
             // start playing
             this.play();
         },/*
@@ -201,15 +201,15 @@ Korx.Cycler = new Class({
         onStop: function(thisElement){},
         onPause: function(thisElement){},
         onMove: function(thisElement, event){},*/
-        onStep: function(thisElement){
+        onStep: function(){
             // move forward one
             this.move(1);
         },
-        onTap: function(thisElement, event){
+        onTap: function(event){
             // pause the cycler
             this.pause();
         },
-        onSwipe: function(thisElement, event){
+        onSwipe: function(event){
             // pause the cycler
             this.pause();
             // move in the direction by one
@@ -290,7 +290,7 @@ Korx.Cycler = new Class({
         this.stepper = null;
         
         // fire init event
-        this.fireEvent('init', this.element);
+        this.fireEvent('init');
 
         // Detect swipe
         this.element.addEvent('touchstart', function(e){
@@ -388,16 +388,16 @@ Korx.Cycler = new Class({
                         }
                         // fire a swipe event if there was a direction or a tap if there wasnt
                         if (direction != null) {
-                            this.fireEvent('swipe', [this.element, {
+                            this.fireEvent('swipe', {
                                 origin: origin,
                                 destination: destination,
                                 direction: direction
-                            }]);
+                            });
                         } else {
-                            this.fireEvent('tap', [this.element, {
+                            this.fireEvent('tap', {
                                 origin: origin,
                                 destination: destination
-                            }]);
+                            });
                         }
                     }
                     // remove listeners
@@ -442,7 +442,7 @@ Korx.Cycler = new Class({
                 this.reset();
                 // let the world know we're ready for action
                 this.ready = true;
-                this.fireEvent('ready', this.element);
+                this.fireEvent('ready');
             }).delay(50, this);
         }).delay(10, this);
     },
@@ -499,9 +499,9 @@ Korx.Cycler = new Class({
         // create the stepper to automcatically move
         clearInterval(this.stepper);
         this.stepper = (function(){
-            this.fireEvent('step', this.element);
+            this.fireEvent('step');
         }).periodical(this.options.duration, this);
-        this.fireEvent('play', this.element);
+        this.fireEvent('play');
         return this;
     },
 
@@ -509,14 +509,14 @@ Korx.Cycler = new Class({
         clearInterval(this.stepper);
         this.stepper = null;
         this.reset();
-        this.fireEvent('stop', this.element);
+        this.fireEvent('stop');
         return this;
     },
 
     pause: function(){
         clearInterval(this.stepper);
         this.stepper = null;
-        this.fireEvent('pause', this.element);
+        this.fireEvent('pause');
         return this;
     },
 
@@ -539,11 +539,11 @@ Korx.Cycler = new Class({
         var previousItem = this.items[previous];
 
         // fire the move event
-        this.fireEvent('move', [this.element, {
+        this.fireEvent('move', {
             delta: delta,
             next: nextItem,
             previous: previousItem
-        }]);
+        });
 
         // update the current item index
         this.current = next;
