@@ -61,7 +61,7 @@ Element.implement({
     },
 
     setPrefixedStyle: function(property, value){
-        if ((property.length >= 10 && property.slice(0, 10) == 'transition') || (property.length >= 9 && property.slice(0, 9) == 'transform')) {
+        if ((property.length >= 10 && property.slice(0, 10) == 'transition') || (property.length >= 9 && property.slice(0, 9) == 'transform') || (property.length >= 11 && property.slice(0, 11) == 'perspective')) {
             ['-webkit-', '-moz-', '-ms-', '-o-', ''].each(function(prefix){
                 this.setStyle(prefix + property.hyphenate(), value);
             }, this);
@@ -331,9 +331,8 @@ Korx.Cycler = new Class({
         }.bind(this));
 
         // test for CSS transition support
-        this.useJs();
         var testListener = function(e){
-            this.useCss();
+            this.css = true;
         }.bind(this);
         var test = new Element('div').setPrefixedStyles({
             display: 'block',
@@ -352,7 +351,7 @@ Korx.Cycler = new Class({
             (function() {
                 // get rid of the test element
                 test.removeTransitionEndEvent(testListener).destroy();
-                // reset the elements
+                // use JS if CSS hasn't been detected
                 this.reset();
                 // let the world know we're ready for action
                 this.ready = true;
