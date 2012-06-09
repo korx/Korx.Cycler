@@ -3,9 +3,9 @@
 ---
 name: Korx.Cycler
 
-version: 0.2
+version: 0.3
 
-description: Korx.Cycler is a versatile slider/slideshow/carousel MooTools plugin. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers.
+description: Korx.Cycler is a versatile MooTools plugin which can be used to easily create a user interface control which cycles through elements, for example a slider, carousel or slideshow. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers, and there's plenty of options to configure it how you want and events to hook in to.
 
 license: 
   - MIT-style
@@ -185,10 +185,10 @@ Korx.Cycler = new Class({
             // start playing
             this.play();
         },/*
-        onPlay: function(thisElement){},
-        onStop: function(thisElement){},
-        onPause: function(thisElement){},
-        onMove: function(thisElement, event){},*/
+        onPlay: function(){},
+        onStop: function(){},
+        onPause: function(){},
+        onMove: function(event){},*/
         onStep: function(){
             // move forward one
             this.move(1);
@@ -476,8 +476,8 @@ Korx.Cycler = new Class({
         return this;
     },
 
-    clean: function(item){
-        item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css)).append(Object.keys(this.options.current.js)).append(Object.keys(this.options.current.css)).append(Object.keys(this.options.destination.js)).append(Object.keys(this.options.destination.css)));
+    clean: function(element){
+        element.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css)).append(Object.keys(this.options.current.js)).append(Object.keys(this.options.current.css)).append(Object.keys(this.options.destination.js)).append(Object.keys(this.options.destination.css)));
 
         return this;
     },
@@ -523,6 +523,10 @@ Korx.Cycler = new Class({
             }
             this.queue.push(this.items[this.current].clone(true, true).store('direction', direction));
         }
+
+        this.fireEvent('move', {
+            delta: delta
+        });
 
         this.cycle();
 
