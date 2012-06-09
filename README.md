@@ -34,74 +34,77 @@ In it's simplest form, create a new object of the Korx.Cycler class specifying y
         </body>
     </html>
 
+*Note: this simple cycler will not have any effects as they need to be specified via the options.*
 
 ### Options
 
 #### `onInit`
-This is triggered during initialisation before it has been determined wether CSS transition support is available or not. `thisElement` refers to the container element.
+This is triggered during initialisation before it has been determined wether CSS transition support is available or not.
 
-    onInit: function(thisElement){
+    onInit: function(){
         this.addItems(this.element.getChildren());
     }
 
 
 #### `onReady`
-This is triggered during initialisation after it has been determined wether CSS transition support is available or not. `thisElement` refers to the container element.
+This is triggered during initialisation after it has been determined wether CSS transition support is available or not.
 
-    onReady: function(thisElement){
+    onReady: function(){
         this.play();
     }
 
 
 ####`onPlay`
-This is triggered when the method `play()` is invoked. `thisElement` refers to the container element.
+This is triggered when the method `play()` is invoked.
 
-    onPlay: function(thisElement){}
+    onPlay: function(){}
 
 
 ####`onStop`
-This is triggered when the method `stop()` is invoked. `thisElement` refers to the container element.
+This is triggered when the method `stop()` is invoked.
 
-    onStop: function(thisElement){}
+    onStop: function(){}
 
 
 #### `onPause`
-This is triggered when the method `pause()` is invoked. `thisElement` refers to the container element.
+This is triggered when the method `pause()` is invoked.
 
-    onPause: function(thisElement){}
+    onPause: function(){}
 
 
 ####`onMove`
-This is triggered when the method `move()` is invoked. `thisElement` refers to the container element. `event` is an object with the properties `delta`, `next` and `previous` where `delta` is the amount to moved by, `next` is the new current element and `previous` is the old current element.
+This is triggered when the method `move()` is invoked. `event` is an object with the property `delta` which is the amount moved by.
 
-    onMove: function(thisElement, event){}
+    onMove: function(event){}
 
 
 #### `onStep`
-This is triggered on each interval setup by `play()`. `thisElement` refers to the container element.
+This is triggered on each interval setup by `play()`.
 
-    onStep: function(thisElement){
+    onStep: function(){
         this.move(1);
     }
 
 
 #### `onTap`
-This is triggered when a 'tap' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
+This is triggered when a 'tap' touch event or gesture is detected in the container element. `event` is an object with the properties `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
 
-    onTap: function(thisElement, event){
+    onTap: function(event){
         this.pause();
     }
 
 
 #### `onSwipe`
-This is triggered when a 'swipe' touch event or gesture is detected in the container element. `thisElement` refers to the container element. `event` is an object with the properties `direction` which could be 'left', 'right', 'up' or 'down' along with `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
+This is triggered when a 'swipe' touch event or gesture is detected in the container element. `event` is an object with the properties `direction` which could be 'left', 'right', 'up' or 'down' along with `origin` and `destination` which are each objects containing the co-ordinate properties `x` and `y`, and the time property `t`.
 
-    onSwipe: function(thisElement, event){
+    onSwipe: function(event){
         this.pause();
         switch (event.direction) {
+            case 'up':
             case 'left':
                 this.move(-1);
                 break;
+            case 'down':
             case 'right':
                 this.move(1);
                 break;
@@ -110,9 +113,15 @@ This is triggered when a 'swipe' touch event or gesture is detected in the conta
 
 
 #### `duration`
-This is the amount of time in milliseconds between each interval setup when `play()` has been invoked.
+This is the amount of time in milliseconds between each step interval - setup when `play()` has been invoked.
 
     duration: 5000
+
+
+#### `flutter`
+This is the amount of time in milliseconds between each item transition when there is a queue of items to action.
+
+    flutter: 250
 
 
 #### `appear`
@@ -219,9 +228,15 @@ This method will remove items from the cycler. It will accept an individual elem
 
 
 #### `reset()`
-This method resets the item styles, and therefore will restore any items in mid transition and make sure the current item has the current styles.
+This method resets the cycler, therefore removing any items in mid transition immediately and injecting the current item with current styles into the container element.
 
     cycler.reset();
+
+
+#### `clean()`
+This method removes styles used in the options from an element
+
+    cycler.clean(element);
 
 
 #### `play()`
@@ -231,13 +246,13 @@ This method moves creates the interval timer which fires every `this.options.dur
 
 
 #### `stop()`
-This method stops the cycler from playing by removing the interval timer. It also resets the item styles, and therefore will restore any items in mid transition.
+This method stops the cycler from playing by removing the interval timer. It also resets the cycler, and therefore will remove any items in mid transition.
 
     cycler.stop();
 
 
 #### `pause()`
-This method stops the cycler from playing by removing the interval timer. It doesn't reset the styles so any items mid transition will be allowed to complete.
+This method stops the cycler from playing by removing the interval timer. It doesn't reset the cycler so any items mid transition will be allowed to complete.
 
     cycler.pause();
 
@@ -250,3 +265,8 @@ This method moves the cycler in the direction specified by `delta` which may be 
     cycler.move(3);
     cycler.move(-5);
 
+
+#### `cycle()`
+This actions any transitions which are stored in `this.queue`. You shouldn't need to use this unless doing some advanced stuff with the transition queue - use `cycler.move(delta)` instead.
+
+    cycler.cycle();
