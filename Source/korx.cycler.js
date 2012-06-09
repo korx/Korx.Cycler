@@ -33,24 +33,19 @@ provides:
 
 Element.implement({
 
-    transition: function(options, origin, destination, useCss){
+    transition: function(self, options, origin, destination, useCss){
         if (typeOf(useCss) == 'undefined' || useCss == null) {
             useCss = false;
         }
-
         if (this.retrieve('transitioning', false)) {
             var queue = this.retrieve('queue');
             if (!queue) {
                 queue = [];
             }
-            queue.push({options: options, origin: origin, destination: destination, useCss: useCss});
+            queue.push({self: self, options: options, origin: origin, destination: destination, useCss: useCss});
             this.store('queue', queue);
         } else {
             this.store('transitioning', true);
-            // fire start event
-            if (typeOf(options.onStart) == 'function') {
-                options.onStart.call({element: this, options: options, origin: origin, destination: destination, useCss: useCss});
-            }
             // don't transition to the origin styles
             if (useCss && origin != null) {
                 this.setPrefixedStyles({
@@ -62,6 +57,10 @@ Element.implement({
                 // set element origin style
                 if (origin != null) {
                     this.setPrefixedStyles(origin);
+                }
+                // fire start event
+                if (typeOf(options.onStart) == 'function') {
+                    options.onStart.call(self, {element: this, options: options, origin: origin, destination: destination, useCss: useCss});
                 }
                 // wait for any styles to be applied
                 (function(){
@@ -88,14 +87,14 @@ Element.implement({
                             this.store('transitioning', false);
                             // fire complete event
                             if (typeOf(options.onComplete) == 'function') {
-                                options.onComplete.call({element: this, options: options, origin: origin, destination: destination, useCss: useCss});
+                                options.onComplete.call(self, {element: this, options: options, origin: origin, destination: destination, useCss: useCss});
                             }
                             // action next in queue
                             var queue = this.retrieve('queue');
                             if (typeOf(queue) == 'array' && queue.length > 0) {
                                 var next = queue.shift();
                                 this.store('queue', queue);
-                                this.transition(next.options, next.origin, next.destination, next.useCss);
+                                this.transition(next.self, next.options, next.origin, next.destination, next.useCss);
                             }
                         }
                     }.bind(this);
@@ -105,7 +104,7 @@ Element.implement({
                         // set element destination style
                         this.setPrefixedStyles(destination);
                     } else {
-                        var morphOptions = options.clone();
+                        var morphOptions = Object.clone(options);
                         morphOptions.onStart = null;
                         morphOptions.onCancel = null;
                         morphOptions.onComplete = transitionEndEventListener;
@@ -181,17 +180,6 @@ Korx.Cycler = new Class({
         onInit: function(){
             // add items to the cycler
             this.addItems(this.element.getChildren());
-            // set display styles
-            this.items.each(function(item){
-                item.setStyles({
-                    'display': 'none',
-                    'z-index': 1
-                });
-            }, this);
-            this.items[this.current].setStyles({
-                'display': null,
-                'z-index': 0
-            });
         },
         onReady: function(){
             // start playing
@@ -225,39 +213,22 @@ Korx.Cycler = new Class({
             }
         },
         duration: 5000,
+        flutter: 250,
         appear: {
-            onStart: function(){
-                // set display styles to visible and top
-                this.element.setStyles({
-                    'display': null,
-                    'z-index': 1
-                });
-            },
-            onComplete: function(){
-                // set display styles to visible and bottom
-                this.element.setStyles({
-                    'display': null,
-                    'z-index': 0
-                });
+            onStart: function(event){
+                // inject the element into the container
+                event.element.inject(this.element);
             },
             duration: 500,
             transition: 'quad:in:out',
             timingFunction: 'ease-in-out'
         },
         disappear: {
-            onStart: function(){
-                // set display styles to visible and bottom
-                this.element.setStyles({
-                    'display': null,
-                    'z-index': 0
-                });
-            },
-            onComplete: function(){
-                // set display styles to hidden and top
-                this.element.setStyles({
-                    'display': 'none',
-                    'z-index': 1
-                });
+            onComplete: function(event){
+                // remove the element from transitioning array
+                this.transitioning.erase(event.element);
+                // remove the element
+                event.element.destroy();
             },
             duration: 500,
             transition: 'quad:in:out',
@@ -287,6 +258,9 @@ Korx.Cycler = new Class({
         this.css = false;
         this.ready = false;
         this.current = 0;
+        this.queue = [];
+        this.transitioning = [];
+        this.cycling = false;
         this.stepper = null;
         
         // fire init event
@@ -469,6 +443,8 @@ Korx.Cycler = new Class({
 
     addItems: function(){
         Array.flatten(arguments).each(function(item){
+            item.dispose();
+            this.clean(item);
             this.items.include(item);
         }, this);
         return this;
@@ -483,12 +459,25 @@ Korx.Cycler = new Class({
 
     reset: function(){
         if (this.items.length < 1 || this.current >= this.items.length) return this;
-        
-        // remove all existing styles and then setup the current item styles
-        this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js);
-        }, this);
-        this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
+
+        // purge transitioning
+        this.transitioning.each(function(item){
+            item.destroy();
+        });
+        this.transitioning = [];
+        // purge queue
+        this.queue.each(function(item){
+            item.destroy();
+        });
+        this.queue = [];
+        // add current item
+        this.queue.push(this.items[this.current].clone(true, true).store('direction', 0).inject(this.element));
+
+        return this;
+    },
+
+    clean: function(item){
+        item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css)).append(Object.keys(this.options.current.js)).append(Object.keys(this.options.current.css)).append(Object.keys(this.options.destination.js)).append(Object.keys(this.options.destination.css)));
 
         return this;
     },
@@ -523,45 +512,78 @@ Korx.Cycler = new Class({
     move: function(delta){
         if (!this.ready || this.items.length < 1 || delta == 0) return this;
 
-        // get the remainder if the delta is bigger than the items array
-        remainder = delta % this.items.length;
-        var previous = this.current;
-        var next = previous + remainder;
-        // make sure the next index isn't out of bounds
-        if (next > this.items.length - 1) {
-            next = next - this.items.length;
-        } else if (next < 0) {
-            next = next + this.items.length;
+        // create an array of items to pass through to the new item
+        for (var i = 1; i <= Math.abs(delta); i++) {
+            var direction = (delta > 0 ? 1 : -1);
+            this.current = this.current + direction;
+            if (this.current < 0) {
+                this.current = this.items.length - 1;
+            } else if (this.current > this.items.length - 1) {
+                this.current = 0;
+            }
+            this.queue.push(this.items[this.current].clone(true, true).store('direction', direction));
         }
 
-        // get the next and previous items
-        var nextItem = this.items[next];
-        var previousItem = this.items[previous];
+        this.cycle();
 
-        // fire the move event
-        this.fireEvent('move', {
-            delta: delta,
-            next: nextItem,
-            previous: previousItem
-        });
+        return this;
+    },
 
-        // update the current item index
-        this.current = next;
+    cycle: function(){
+        if (this.cycling || this.queue.length <= 1) return this;
+
+        this._cycle();
+
+        return this;
+    },
+
+    _cycle: function(){
+        var first = !this.cycling;
+        this.cycling = true;
+        var item = this.queue.shift();
+        var last = (this.queue.length == 0);
+
+        // get diretion of movement
+        var inDirection = item.retrieve('direction');
+        var outDirection = item.retrieve('direction');
+        if (!last) {
+            var next = this.queue.shift();
+            outDirection = next.retrieve('direction');
+            this.queue.push(next);
+        }
+
+        // add to trasitioning array
+        this.transitioning.push(item);
 
         if (this.css) {
 
-            // transition next item to current style
-            nextItem.transition(this.options.appear, (delta > 0 ? this.options.origin.css : this.options.destination.css), this.options.current.css, true);
-            // transition previous item to destination style
-            previousItem.transition(this.options.disappear, this.options.current.css, (delta > 0 ? this.options.destination.css : this.options.origin.css), true);
+            if (!first) {
+                // transition next item to current style
+                item.transition(this, this.options.appear, (inDirection >= 0 ? this.options.origin.css : this.options.destination.css), this.options.current.css, true);
+            }
+            if (!last) {
+                // transition previous item to destination style
+                item.transition(this, this.options.disappear, this.options.current.css, (outDirection >= 0 ? this.options.destination.css : this.options.origin.css), true);
+            }
 
         } else {
 
-            // transition next item to current style
-            nextItem.transition(this.options.appear, (delta > 0 ? this.options.origin.js : this.options.destination.js), this.options.current.js, false);
-            // transition previous item to destination style
-            previousItem.transition(this.options.disappear, this.options.current.js, (delta > 0 ? this.options.destination.js : this.options.origin.js), false);
+            if (!first) {
+                // transition next item to current style
+                item.transition(this, this.options.appear, (inDirection >= 0 ? this.options.origin.js : this.options.destination.js), this.options.current.js, false);
+            }
+            if (!last) {
+                // transition previous item to destination style
+                item.transition(this, this.options.disappear, this.options.current.js, (outDirection >= 0 ? this.options.destination.js : this.options.origin.js), false);
+            }
 
+        }
+
+        if (this.queue.length == 0) {
+            this.queue.push(item);
+            this.cycling = false;
+        } else {
+            this._cycle.delay(this.options.flutter, this);
         }
 
         return this;
