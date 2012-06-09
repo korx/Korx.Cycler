@@ -217,7 +217,7 @@ Korx.Cycler = new Class({
         appear: {
             onStart: function(event){
                 // inject the element into the container
-                event.element.inject(this.element);
+                event.element.inject(this.element, 'top');
             },
             duration: 500,
             transition: 'quad:in:out',
@@ -471,7 +471,7 @@ Korx.Cycler = new Class({
         });
         this.queue = [];
         // add current item
-        this.queue.push(this.items[this.current].clone(true, true).store('direction', 0).inject(this.element));
+        this.queue.push(this.items[this.current].clone(true, true).store('direction', 0).inject(this.element, 'top'));
 
         return this;
     },
@@ -583,7 +583,11 @@ Korx.Cycler = new Class({
             this.queue.push(item);
             this.cycling = false;
         } else {
-            this._cycle.delay(this.options.flutter, this);
+            if (first) {
+                this._cycle();
+            } else {
+                this._cycle.delay(this.options.flutter, this);
+            }
         }
 
         return this;
