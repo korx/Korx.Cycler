@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Korx.Cycler - Slideshow - Kitchen sink</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.0/mootools-yui-compressed.js"></script>
+        <script src="../../Source/korx.cycler.js"></script>
+        <script>
+            window.addEvent('domready', function(){
+                var slideshow = new Korx.Cycler($('slideshow'), {
+                    onReady: function(){
+                        $('slideshow').adopt(
+                            new Element('img', {
+                                src: '../../Graphics/play.png',
+                                styles: {
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 10,
+                                    cursor: 'pointer',
+                                    zIndex: 1
+                                },
+                                events: {
+                                    click: function(){ this.play(); }.bind(this)
+                                }
+                            }),
+                            new Element('img', {
+                                src: '../../Graphics/pause.png',
+                                styles: {
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 70,
+                                    cursor: 'pointer',
+                                    zIndex: 1
+                                },
+                                events: {
+                                    click: function(){ this.pause(); }.bind(this)
+                                }
+                            }),
+                            new Element('img', {
+                                src: '../../Graphics/stop.png',
+                                styles: {
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 130,
+                                    cursor: 'pointer',
+                                    zIndex: 1
+                                },
+                                events: {
+                                    click: function(){ this.stop(); }.bind(this)
+                                }
+                            }),
+                            new Element('img', {
+                                src: '../../Graphics/next.png',
+                                styles: {
+                                    position: 'absolute',
+                                    top: 10,
+                                    right: 10,
+                                    cursor: 'pointer',
+                                    zIndex: 1
+                                },
+                                events: {
+                                    click: function(){ this.pause(); this.move(1); }.bind(this)
+                                }
+                            }),
+                            new Element('img', {
+                                src: '../../Graphics/previous.png',
+                                styles: {
+                                    position: 'absolute',
+                                    top: 10,
+                                    right: 70,
+                                    cursor: 'pointer',
+                                    zIndex: 1
+                                },
+                                events: {
+                                    click: function(){ this.pause(); this.move(-1); }.bind(this)
+                                }
+                            })
+                        );
+                        if (this.css) {
+                            $('slideshow').setPrefixedStyle('perspective', '1000');
+                        }
+                        this.play();
+                    },
+                    origin: {
+                        css: {
+                            transform: 'rotateY(-180deg)',
+                            opacity: 0
+                        },
+                        js: {
+                            opacity: 0
+                        }
+                    },
+                    current: {
+                        css: {
+                            transform: 'rotateY(0deg)',
+                            opacity: 1
+                        },
+                        js: {
+                            opacity: 1
+                        }
+                    },
+                    destination: {
+                        css: {
+                            transform: 'rotateY(180deg)',
+                            opacity: 0
+                        },
+                        js: {
+                            opacity: 0
+                        }
+                    }
+                });
+            });
+        </script>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
+            #wrapper {
+                margin: 0 auto;
+                width: 960px;
+            }
+            #slideshow {
+                position: relative;
+                width: 960px;
+                height: 300px;
+            }
+            #slideshow img {
+                position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <p><a href="../index.html">More demos</a></p>
+            <h1>Slideshow - Kitchen sink</h1>
+            <div id="slideshow">
+                <img src="../../Graphics/image1.jpg" width="960" height="300" alt="Orion's Head">
+                <img src="../../Graphics/image2.jpg" width="960" height="300" alt="Antennae Galaxies">
+                <img src="../../Graphics/image3.jpg" width="960" height="300" alt="Orion Nebula">
+                <img src="../../Graphics/image4.jpg" width="960" height="300" alt="Sombrero Galaxy">
+                <img src="../../Graphics/image5.jpg" width="960" height="300" alt="Eta Carinae Nebula">
+            </div>
+        </div>
+    </body>
+</html>
