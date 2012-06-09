@@ -33,6 +33,93 @@ provides:
 
 Element.implement({
 
+    transition: function(options, origin, destination, useCss){
+        if (typeOf(useCss) == 'undefined' || useCss == null) {
+            useCss = false;
+        }
+
+        if (this.retrieve('transitioning', false)) {
+            var queue = this.retrieve('queue');
+            if (!queue) {
+                queue = [];
+            }
+            queue.push({options: options, origin: origin, destination: destination, useCss: useCss});
+            this.store('queue', queue);
+        } else {
+            this.store('transitioning', true);
+            // fire start event
+            if (typeOf(options.onStart) == 'function') {
+                options.onStart.call({element: this, options: options, origin: origin, destination: destination, useCss: useCss});
+            }
+            // don't transition to the origin styles
+            if (useCss && origin != null) {
+                this.setPrefixedStyles({
+                    transitionProperty: 'none'
+                });
+            }
+            // wait for styles to be applied
+            (function(){
+                // set element origin style
+                if (origin != null) {
+                    this.setPrefixedStyles(origin);
+                }
+                // wait for any styles to be applied
+                (function(){
+                    if (useCss) {
+                        // start using transitions for the element
+                        this.setPrefixedStyles({
+                            transitionProperty: 'all',
+                            transitionDuration: options.duration+'ms',
+                            transitionTimingFunction: options.timingFunction
+                        });
+                    }
+                    // stop using transitions when the element finishes transitioning
+                    var transitionEndEventListener = function(e){
+                        if (!useCss || e.target == this) {
+                            if (useCss) {
+                                // remove the listener
+                                this.removeTransitionEndEvent(transitionEndEventListener);
+                                // stop transitioning
+                                this.setPrefixedStyles({
+                                    transitionProperty: 'none'
+                                });
+                            }
+                            // remember that the transition has stopped
+                            this.store('transitioning', false);
+                            // fire complete event
+                            if (typeOf(options.onComplete) == 'function') {
+                                options.onComplete.call({element: this, options: options, origin: origin, destination: destination, useCss: useCss});
+                            }
+                            // action next in queue
+                            var queue = this.retrieve('queue');
+                            if (typeOf(queue) == 'array' && queue.length > 0) {
+                                var next = queue.shift();
+                                this.store('queue', queue);
+                                this.transition(next.options, next.origin, next.destination, next.useCss);
+                            }
+                        }
+                    }.bind(this);
+                    if (useCss) {
+                        // add transition end event
+                        this.addTransitionEndEvent(transitionEndEventListener);
+                        // set element destination style
+                        this.setPrefixedStyles(destination);
+                    } else {
+                        var morphOptions = options.clone();
+                        morphOptions.onStart = null;
+                        morphOptions.onCancel = null;
+                        morphOptions.onComplete = transitionEndEventListener;
+                        morphOptions.onChainComplete = null;
+                        var morph = new Fx.Morph(this, morphOptions);
+                        morph.start(destination);
+                    }
+                }).delay(10, this);
+            }).delay(10, this);
+        }
+
+        return this;
+    },
+
     addTransitionEndEvent: function(fn){
         ['webkitTransitionEnd', 'MSTransitionEnd', 'oTransitionEnd', 'transitionend'].each(function(event){
             if (this.addEventListener) {
@@ -399,7 +486,7 @@ Korx.Cycler = new Class({
         
         // remove all existing styles and then setup the current item styles
         this.items.each(function(item){
-            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js).get('morph').cancel();
+            item.removePrefixedStyles(['transition-property', 'transition-duration', 'transition-timing-function'].append(Object.keys(this.options.origin.js)).append(Object.keys(this.options.origin.css))).setPrefixedStyles(this.css ? this.options.origin.css : this.options.origin.js);
         }, this);
         this.items[this.current].setPrefixedStyles(this.css ? this.options.current.css : this.options.current.js);
 
@@ -464,77 +551,20 @@ Korx.Cycler = new Class({
         if (this.css) {
 
             // transition next item to current style
-            this.transition(nextItem, (delta > 0 ? this.options.origin.css : this.options.destination.css), this.options.current.css, this.options.appear);
+            nextItem.transition(this.options.appear, (delta > 0 ? this.options.origin.css : this.options.destination.css), this.options.current.css, true);
             // transition previous item to destination style
-            this.transition(previousItem, null, (delta > 0 ? this.options.destination.css : this.options.origin.css), this.options.disappear);
+            previousItem.transition(this.options.disappear, this.options.current.css, (delta > 0 ? this.options.destination.css : this.options.origin.css), true);
 
         } else {
 
-            // set next item origin style
-            nextItem.setPrefixedStyles(delta > 0 ? this.options.origin.js : this.options.destination.js);
-            // morph next item to current style
-            nextItem.store('morph', null).set('morph', this.options.appear).morph(this.options.current.js);
-            // morph previous item to destination style
-            previousItem.store('morph', null).set('morph', this.options.disappear).morph(delta > 0 ? this.options.destination.js : this.options.origin.js);
+            // transition next item to current style
+            nextItem.transition(this.options.appear, (delta > 0 ? this.options.origin.js : this.options.destination.js), this.options.current.js, false);
+            // transition previous item to destination style
+            previousItem.transition(this.options.disappear, this.options.current.js, (delta > 0 ? this.options.destination.js : this.options.origin.js), false);
 
         }
 
         return this;
-    },
-
-    transition: function(element, origin, destination, options){
-        if (element.retrieve('queue', []).length > 0) {
-            element.store('queue', element.retrieve('queue', []).push({origin: origin, destination: destination, options: options}));
-        } else {
-            // don't transition to the origin styles
-            if (origin != null) {
-                element.setPrefixedStyles({
-                    transitionProperty: 'none'
-                });
-            }
-            // wait for styles to be applied
-            (function(){
-                // set element origin style
-                if (origin != null) {
-                    element.setPrefixedStyles(origin);
-                }
-                // fire start event
-                if (typeOf(options.onStart) == 'function') {
-                    options.onStart.call({element: element, options: options});
-                }
-                // wait for styles to be applied
-                (function(){
-                    // start using transitions for the element
-                    element.setPrefixedStyles({
-                        transitionProperty: 'all',
-                        transitionDuration: options.duration+'ms',
-                        transitionTimingFunction: options.timingFunction
-                    });
-                    // stop using transitions when the element finishes transitioning
-                    var transitionEndEventListener = function(e){
-                        if (e.target == element) {
-                            element.removeTransitionEndEvent(transitionEndEventListener);
-                            // fire complete event
-                            if (typeOf(options.onComplete) == 'function') {
-                                options.onComplete.call({element: element, options: options});
-                            }
-                            // action next in queue
-                            if (element.retrieve('queue', []).length > 0) {
-                                var queue = element.retrieve('queue', []).shift();
-                                this.transition(element, queue.origin, queue.destination, queue.options);
-                            } else {
-                                element.setPrefixedStyles({
-                                    transitionProperty: 'none'
-                                });
-                            }
-                        }
-                    }.bind(this);
-                    element.addTransitionEndEvent(transitionEndEventListener);
-                    // set element destination style
-                    element.setPrefixedStyles(destination);
-                }).delay(10, this);
-            }).delay(10, this);
-        }
     }
 
 });
