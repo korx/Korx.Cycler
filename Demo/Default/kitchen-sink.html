@@ -8,6 +8,7 @@
             window.addEvent('domready', function(){
                 var cycler = new Korx.Cycler($('cycler'), {
                     onReady: function(){
+                        this.move(0);
                         this.play();
                     },
                     onStep: function(){

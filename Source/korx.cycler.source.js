@@ -3,7 +3,7 @@
 ---
 name: Korx.Cycler
 
-version: 0.3
+version: 0.4
 
 description: Korx.Cycler is a versatile MooTools plugin which can be used to easily create a user interface control which cycles through elements, for example a slider, carousel or slideshow. It uses CSS 3 transitions with a fallback to Fx.Morph for older browsers, and there's plenty of options to configure it how you want and events to hook in to.
 
@@ -182,6 +182,8 @@ Korx.Cycler = new Class({
             this.addItems(this.element.getChildren());
         },
         onReady: function(){
+            // transition in the first item
+            this.move(0);
             // start playing
             this.play();
         },/*
@@ -412,8 +414,6 @@ Korx.Cycler = new Class({
             (function() {
                 // get rid of the test element
                 test.removeTransitionEndEvent(testListener).destroy();
-                // use JS if CSS hasn't been detected
-                this.reset();
                 // let the world know we're ready for action
                 this.ready = true;
                 this.fireEvent('ready');
@@ -510,7 +510,22 @@ Korx.Cycler = new Class({
     },
 
     move: function(delta){
-        if (!this.ready || this.items.length < 1 || delta == 0) return this;
+        if (!this.ready || this.items.length < 1) return this;
+
+        // make sure the first item is in the queue
+        if (this.queue.length == 0) {
+            if (delta == 0){
+                this.queue.push(this.items[this.current].clone(true, true).store('direction', 1));
+                // transition next item to current style
+                if (this.css) {
+                    this.queue[0].transition(this, this.options.appear, this.options.origin.css, this.options.current.css, true);
+                } else {
+                    this.queue[0].transition(this, this.options.appear, this.options.origin.js, this.options.current.js, false);
+                }
+            } else {
+                this.reset();
+            }
+        }
 
         // create an array of items to pass through to the new item
         for (var i = 1; i <= Math.abs(delta); i++) {
