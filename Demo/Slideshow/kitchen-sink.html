@@ -83,8 +83,7 @@
                     },
                     origin: {
                         css: {
-                            transform: 'rotateY(-180deg)',
-                            opacity: 0
+                            transform: 'rotateY(-180deg)'
                         },
                         js: {
                             opacity: 0
@@ -92,8 +91,7 @@
                     },
                     current: {
                         css: {
-                            transform: 'rotateY(0deg)',
-                            opacity: 1
+                            transform: 'rotateY(0deg)'
                         },
                         js: {
                             opacity: 1
@@ -101,8 +99,7 @@
                     },
                     destination: {
                         css: {
-                            transform: 'rotateY(180deg)',
-                            opacity: 0
+                            transform: 'rotateY(180deg)'
                         },
                         js: {
                             opacity: 0
@@ -127,6 +124,11 @@
             }
             #slideshow img {
                 position: absolute;
+                -webkit-backface-visibility: hidden;
+                -moz-backface-visibility: hidden;
+                -ms-backface-visibility: hidden;
+                -o-backface-visibility: hidden;
+                backface-visibility: hidden;
             }
         </style>
     </head>
