@@ -206,7 +206,7 @@ Force the cycler to switch to using CSS transitions.
 
 
 #### `useJs()`
-Force the cycler to switch to using Javascript Fx.Morph transitions.
+Force the cycler to switch to using JavaScript Fx.Morph transitions.
 
     cycler.useJs();
 
